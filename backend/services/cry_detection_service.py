@@ -3,7 +3,17 @@ import logging
 import numpy as np
 # Suppress TF logs
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
-import tensorflow as tf
+
+logger = logging.getLogger(__name__)
+
+# Try to import tensorflow, but don't crash if not installed yet
+try:
+    import tensorflow as tf
+    TF_AVAILABLE = True
+except ImportError:
+    TF_AVAILABLE = False
+    logger.warning("TensorFlow not installed. Cry detection model will not be available.")
+
 from config import settings
 
 logger = logging.getLogger(__name__)
@@ -17,6 +27,9 @@ class CryDetectionService:
         """
         Load the pretrained CNN model from the config path.
         """
+        if not TF_AVAILABLE:
+            logger.warning("TensorFlow not available. Model cannot be loaded.")
+            return
         try:
             if os.path.exists(settings.MODEL_PATH):
                 self.model = tf.keras.models.load_model(settings.MODEL_PATH)

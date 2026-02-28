@@ -1,7 +1,8 @@
 fastapi>=0.110.0
-uvicorn
+uvicorn[standard]
 librosa
 numpy<2.0.0
 tensorflow>=2.15.0
 soundfile
 python-multipart
+websockets

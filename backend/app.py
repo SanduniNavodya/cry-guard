@@ -1,9 +1,12 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import logging
 
 from config import settings
 from routes import audio_routes
+from routes import sensor_routes
+from routes import ws_routes
 
 # Configure logging
 logging.basicConfig(
@@ -18,8 +21,19 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# CORS - allow React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Include routes
 app.include_router(audio_routes.router)
+app.include_router(sensor_routes.router)
+app.include_router(ws_routes.router)
 
 @app.on_event("startup")
 async def startup_event():
