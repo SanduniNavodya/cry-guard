@@ -3,6 +3,7 @@ import { useWebSocket } from './hooks/useWebSocket';
 import Header from './components/Header';
 import CryBanner from './components/CryBanner';
 import SensorGrid from './components/SensorGrid';
+import ListenButton from './components/ListenButton';
 import NotificationsPanel from './components/NotificationsPanel';
 
 export default function App() {
@@ -72,6 +73,7 @@ export default function App() {
       <Header espConnected={espConnected} />
       <CryBanner cryStatus={cryStatus} />
       <SensorGrid sensorData={sensorData} />
+      <ListenButton />
       <NotificationsPanel notifications={notifications} />
     </div>
   );

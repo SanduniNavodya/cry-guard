@@ -7,6 +7,7 @@ from config import settings
 from routes import audio_routes
 from routes import sensor_routes
 from routes import ws_routes
+from routes import audio_stream_routes
 
 # Configure logging
 logging.basicConfig(
@@ -34,6 +35,7 @@ app.add_middleware(
 app.include_router(audio_routes.router)
 app.include_router(sensor_routes.router)
 app.include_router(ws_routes.router)
+app.include_router(audio_stream_routes.router)
 
 @app.on_event("startup")
 async def startup_event():

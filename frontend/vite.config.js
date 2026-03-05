@@ -14,6 +14,14 @@ export default defineConfig({
         target: 'ws://localhost:8080',
         ws: true,
       },
+      '/ws/audio-stream': {
+        target: 'ws://localhost:8080',
+        ws: true,
+      },
+      '/ws/audio-listen': {
+        target: 'ws://localhost:8080',
+        ws: true,
+      },
     },
   },
 });
