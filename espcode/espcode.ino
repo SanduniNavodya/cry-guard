@@ -5,11 +5,11 @@
 #include <DHT.h>
 
 // ======================== WiFi Config ========================
-const char* WIFI_SSID     = "Dulshan Dialog 4G 643";
-const char* WIFI_PASSWORD = "Chuki000";
+const char* WIFI_SSID     = "Dialog 4G 018";
+const char* WIFI_PASSWORD = "917b765";
 
 // ======================== Server Config ======================
-const char* SERVER_HOST      = "192.168.8.135";  // Python backend IP
+const char* SERVER_HOST      = "192.168.8.179";  // Python backend IP
 const int   SERVER_PORT      = 8080;
 const char* SENSOR_ENDPOINT  = "/api/sensor-data";
 const char* AUDIO_ENDPOINT   = "/api/audio";
