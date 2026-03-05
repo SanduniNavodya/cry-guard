@@ -5,6 +5,7 @@ import CryBanner from './components/CryBanner';
 import SensorGrid from './components/SensorGrid';
 import ListenButton from './components/ListenButton';
 import NotificationsPanel from './components/NotificationsPanel';
+import CryAlertPopup from './components/CryAlertPopup';
 
 export default function App() {
   const [espConnected, setEspConnected] = useState(false);
@@ -21,6 +22,33 @@ export default function App() {
     timestamp: null,
   });
   const [notifications, setNotifications] = useState([]);
+  const [activeAlert, setActiveAlert] = useState(null);
+
+  const handleCryAlert = useCallback((data, notification) => {
+    setCryStatus(data);
+
+    const notif = notification || {
+      type: 'cry_alert',
+      message: data.message || 'Baby is crying!',
+      timestamp: data.timestamp || Date.now() / 1000,
+      source: data.source || 'unknown',
+    };
+
+    setNotifications((prev) => [...prev, notif].slice(-50));
+
+    // Show popup
+    setActiveAlert(notif);
+
+    // Browser notification (in addition to in-app popup)
+    if (Notification.permission === 'granted') {
+      new Notification('🚨 CryGuard Alert', {
+        body: notif.message,
+        icon: '/vite.svg',
+        tag: 'cry-alert',   // prevent duplicate browser notifications
+        requireInteraction: true,
+      });
+    }
+  }, []);
 
   const handleWsMessage = useCallback((msg) => {
     switch (msg.type) {
@@ -37,16 +65,8 @@ export default function App() {
         break;
 
       case 'cry_alert':
-        if (msg.data) setCryStatus(msg.data);
-        if (msg.notification) {
-          setNotifications((prev) => [...prev, msg.notification].slice(-50));
-          // Browser notification
-          if (Notification.permission === 'granted') {
-            new Notification('CryGuard Alert', {
-              body: msg.notification.message,
-              icon: '/vite.svg',
-            });
-          }
+        if (msg.data) {
+          handleCryAlert(msg.data, msg.notification);
         }
         break;
 
@@ -57,7 +77,7 @@ export default function App() {
       default:
         break;
     }
-  }, []);
+  }, [handleCryAlert]);
 
   useWebSocket(handleWsMessage);
 
@@ -73,8 +93,12 @@ export default function App() {
       <Header espConnected={espConnected} />
       <CryBanner cryStatus={cryStatus} />
       <SensorGrid sensorData={sensorData} />
-      <ListenButton />
+      <ListenButton onCryAlert={handleCryAlert} />
       <NotificationsPanel notifications={notifications} />
+      <CryAlertPopup
+        alert={activeAlert}
+        onDismiss={() => setActiveAlert(null)}
+      />
     </div>
   );
 }

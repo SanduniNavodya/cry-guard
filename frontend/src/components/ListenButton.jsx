@@ -5,7 +5,7 @@ const AUDIO_WS_URL = `ws://${window.location.hostname}:8080/ws/audio-listen`;
 const SAMPLE_RATE = 16000;
 const JITTER_BUFFER_MS = 0.08; // 80ms initial buffer to prevent gaps
 
-export default function ListenButton() {
+export default function ListenButton({ onCryAlert }) {
   const [listening, setListening] = useState(false);
   const [connecting, setConnecting] = useState(false);
   const [espStreaming, setEspStreaming] = useState(false);
@@ -45,9 +45,18 @@ export default function ListenButton() {
     };
 
     ws.onmessage = (event) => {
-      // Skip text messages (e.g. "connected" handshake)
+      // Handle text messages (handshake + cry alerts)
       if (typeof event.data === 'string') {
         console.log('[AudioListen] Server:', event.data);
+        // Check if it's a cry alert JSON
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.type === 'cry_alert' && msg.data?.cry_detected && onCryAlert) {
+            onCryAlert(msg.data);
+          }
+        } catch (_) {
+          // Not JSON (e.g. "connected" handshake) – ignore
+        }
         return;
       }
 
