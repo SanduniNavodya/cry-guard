@@ -119,7 +119,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Run the backend server
-python app.py
+python app.py\venv\Scripts\python.exe -m pip install --upgrade pip
 ```
 
 The backend will start on **http://localhost:8080**.
