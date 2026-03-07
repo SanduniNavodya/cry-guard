@@ -1,11 +1,14 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useWebSocket } from './hooks/useWebSocket';
+import { fetchStatus } from './services/api';
 import Header from './components/Header';
 import CryBanner from './components/CryBanner';
 import SensorGrid from './components/SensorGrid';
 import ListenButton from './components/ListenButton';
 import NotificationsPanel from './components/NotificationsPanel';
 import CryAlertPopup from './components/CryAlertPopup';
+
+const POLL_INTERVAL = 5000; // Poll MongoDB every 5 seconds as fallback
 
 export default function App() {
   const [espConnected, setEspConnected] = useState(false);
@@ -23,6 +26,40 @@ export default function App() {
   });
   const [notifications, setNotifications] = useState([]);
   const [activeAlert, setActiveAlert] = useState(null);
+
+  // Fetch initial state from MongoDB on mount
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        const status = await fetchStatus();
+        setEspConnected(status.esp_connected);
+        if (status.sensor_data) setSensorData(status.sensor_data);
+        if (status.cry_status) setCryStatus(status.cry_status);
+        if (status.notifications) setNotifications(status.notifications);
+        console.log('[API] Initial data loaded from MongoDB');
+      } catch (err) {
+        console.error('[API] Failed to load initial data:', err);
+      }
+    };
+    loadInitialData();
+  }, []);
+
+  // Poll MongoDB periodically as fallback (in case WebSocket is down)
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const status = await fetchStatus();
+        setEspConnected(status.esp_connected);
+        if (status.sensor_data) setSensorData(status.sensor_data);
+        if (status.cry_status) setCryStatus(status.cry_status);
+        if (status.notifications) setNotifications(status.notifications);
+      } catch (err) {
+        console.error('[API] Polling error:', err);
+      }
+    }, POLL_INTERVAL);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleCryAlert = useCallback((data, notification) => {
     setCryStatus(data);

@@ -6,10 +6,10 @@
 
 // ======================== WiFi Config ========================
 const char* WIFI_SSID     = "Dialog 4G 018";
-const char* WIFI_PASSWORD = "917b765";
+const char* WIFI_PASSWORD = "917b765B";
 
 // ======================== Server Config ======================
-const char* SERVER_HOST      = "192.168.8.179";  // Python backend IP
+const char* SERVER_HOST      = "192.168.8.120";  // Python backend IP
 const int   SERVER_PORT      = 8080;
 const char* SENSOR_ENDPOINT  = "/api/sensor-data";
 const char* AUDIO_ENDPOINT   = "/api/audio";
@@ -35,7 +35,7 @@ DHT dht(DPIN, DTYPE);
 #define CHANNELS        1
 #define I2S_READ_SAMPLES 512               // samples per I2S read (32ms @ 16kHz)
 #define I2S_READ_BYTES   (I2S_READ_SAMPLES * (SAMPLE_BITS / 8))
-#define AUDIO_SEND_SECONDS 3               // seconds of audio for cry detection
+#define AUDIO_SEND_SECONDS 7               // seconds of audio for cry detection
 #define AUDIO_CHUNK_BYTES  (SAMPLE_RATE * (SAMPLE_BITS / 8) * AUDIO_SEND_SECONDS)
 #define WAV_HEADER_SIZE 44
 
@@ -52,7 +52,7 @@ int cryBufferOffset = 0;
 
 // ======================== Timing =============================
 unsigned long lastSensorSend = 0;
-unsigned long sensorInterval = 2000;      // send sensor data every 2s
+unsigned long sensorInterval = 5000;      // send sensor data every 2s
 
 // ======================== I2S Setup ==========================
 void i2sInit() {

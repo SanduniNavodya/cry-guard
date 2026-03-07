@@ -11,4 +11,8 @@ class Settings:
     MEL_BINS: int = 128
     MAX_FREQ: int = 8000
 
+    # MongoDB
+    MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+    MONGO_DB_NAME: str = os.getenv("MONGO_DB_NAME", "cryguard")
+
 settings = Settings()

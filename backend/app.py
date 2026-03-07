@@ -8,6 +8,7 @@ from routes import audio_routes
 from routes import sensor_routes
 from routes import ws_routes
 from routes import audio_stream_routes
+from services.database import database
 
 # Configure logging
 logging.basicConfig(
@@ -40,6 +41,14 @@ app.include_router(audio_stream_routes.router)
 @app.on_event("startup")
 async def startup_event():
     logger.info(f"Starting {settings.APP_NAME}...")
+    # Connect to MongoDB
+    await database.connect()
+    logger.info("MongoDB connected successfully.")
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info(f"Shutting down {settings.APP_NAME}...")
+    await database.close()
 
 @app.get("/", tags=["Health"])
 async def root_health_check():
